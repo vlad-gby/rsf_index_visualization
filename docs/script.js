@@ -4,7 +4,7 @@
 let myChart
 
 async function get_data() {
-    const response = await fetch('../data/data.json');
+    const response = await fetch('./data/data.json');
     const data = await response.json();
      
     // Get years for lables
@@ -74,7 +74,6 @@ async function get_data() {
         if (graph_by == 'rank'){
             myChart.options.scales.y.reverse = true
         }
-        console.log(zoom)
         if (!zoom){
             if (graph_by == 'rank'){
                 myChart.options.scales.y.min = 0
@@ -130,7 +129,7 @@ async function get_data() {
         myChart.update()
     }
 
-    updateChart(['Ukraine', 'Russia'], 'rank', ['2020', '2025'], false)
+    updateChart(['Ukraine', 'Russia'], 'rank', ['2002', '2025'], false)
 
 
 }
