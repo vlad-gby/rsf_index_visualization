@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Freedom's Trajectory</title>
+    <link rel="stylesheet" href="style_output.css"> 
+    <script src="script.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+
+<body>
+  <main class="flex h-screen bg-gray-800">
+
+    <aside class="w-1/5 p-4 bg-gray-900 flex-col flex justify-between text-gray-200">
+      <header class="grow p-4">
+        <img src="imgs/logo.png" alt="Freedom's Trajectory Logo">
+        <nav class="mt-8"></nav>
+      </header>
+
+      <div>
+        <h2>Explore the RSF's Press Freedom Index from 2002-2025. See movements in press freedom across multiple countries and indicators over time.</h2>
+      </div>
+
+      <footer >
+        <a href="https://github.com/vlad-gby/rsf_index_visualization">
+          <img src="imgs/github-logo.png" alt="GitHub Repository" class="w-16 h-16 mt-4">
+        </a>
+        <p class="text-xs"> © 2025 Vladyslav Hubanov🇺🇦❤️. Code licensed under MIT.</p>
+         <p class="text-xs text-gray-400">
+          Data sourced from <a href="https://rsf.org" class="underline">Reporters Without Borders</a>.
+        </p>
+      </footer>
+    </aside>
+
+    <section class="grow flex flex-col justify-center">
+      <div class="p-8 border-8">
+        <canvas id="chart" class="w-full, h-full, border-2"></canvas>
+      </div>
+    </section>
+
+  </main>
+</body>
+<!-- © 2025 Vladyslav [Your Last Name]. Code licensed under MIT. -->
+</html>
