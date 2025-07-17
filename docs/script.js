@@ -129,7 +129,7 @@ async function get_data() {
         myChart.update()
     }
 
-    updateChart(['Ukraine', 'Russia'], 'rank', ['2002', '2025'], false)
+    updateChart(['Ukraine', 'Russia'], 'score', ['2002', '2025'], false)
 
 
 }
