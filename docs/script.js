@@ -1,9 +1,9 @@
-
-
-
 let myChart
 
-async function get_data() {
+
+
+
+async function setUP() {
     const response = await fetch('./data/data.json');
     const data = await response.json();
      
@@ -58,7 +58,7 @@ async function get_data() {
         
 
 
-    function updateChart(countries, graph_by, years, zoom, factors){
+    function updateChart(countries, graph_by, years, zoom, factors,){
         years = years.map(year => parseInt(year))
         let yearsUpd = [] // Get a complete list of selected years
         for (let i = years[0]; i <= years[1]; i++){
@@ -79,8 +79,8 @@ async function get_data() {
                 myChart.options.scales.y.min = 0
                 myChart.options.scales.y.max = 180
             }else{
-                myChart.options.scales.y.min = -10
-                myChart.options.scales.y.max = 142
+                myChart.options.scales.y.min = 0
+                myChart.options.scales.y.max = 100
             }
         }
 
@@ -91,12 +91,12 @@ async function get_data() {
             }).map(row => row[graph_by])
         });
         
-        factorsData = {} 
+        data_factors = {} 
         if (factors){ // Get factors data. Optionally
             countries.map((selected_country) => {
-                factorsData[selected_country] = {} 
+                data_factors[selected_country] = {} 
                 factors.forEach((factor) => {
-                    factorsData[selected_country][factor] = (data.filter(row => {
+                    data_factors[selected_country][factor] = (data.filter(row => {
                         return (row.country == selected_country) && (yearsUpd.includes(row.year))
                     }).map(row => row[factor]))
                 });
@@ -113,14 +113,14 @@ async function get_data() {
         })
 
         if ((yearsUpd[yearsUpd.length - 1] > 2021) 
-            && (factorsData != {})){ // Plotting factors if defined and years in scope
-            for (let country of Object.keys(factorsData)){
-                for (let factor of Object.keys(factorsData[country])){
+            && (data_factors != {})){ // Plotting factors if defined and years in scope
+            for (let country of Object.keys(data_factors)){
+                for (let factor of Object.keys(data_factors[country])){
                     myChart.data.datasets.push({
                         borderDash: [10, 5],
                         borderWidth: 2,
                         label: `${country}_${factor}`,
-                        data: factorsData[country][factor]
+                        data: data_factors[country][factor]
                     })
                 }
             }
@@ -129,10 +129,39 @@ async function get_data() {
         myChart.update()
     }
 
-    updateChart(['Ukraine', 'Russia'], 'score', ['2002', '2025'], false)
-
-
+    updateChart(['Ukraine', 'Russia', 'Average'], 'score', ['2002', '2025'], true)
 }
 
+setUP()
 
-get_data()
+// Now it's UI part, I need to connect my panel controls to the graph
+
+el_nav = document.getElementById('controls-panel')
+el_zoom = document.getElementById('zoom-button')
+
+el_country_input = document.getElementById('country-search')
+el_countries_selector = document.getElementById('country-results')
+el_countries_container = document.getElementById('selected-countries-container')
+
+el_graphby = document.getElementById('metric-selector')
+el_year_start = document.getElementById('year-start')
+el_year_end = document.getElementById('year-end')
+el_factors_container = document.getElementById('factors-container')
+
+
+updateChart(['Ukraine', 'Israel', 'Average'], 'score', ['2002', '2025'], true)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

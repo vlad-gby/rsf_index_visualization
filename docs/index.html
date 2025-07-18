@@ -12,16 +12,96 @@
 <body>
   <main class="flex h-screen bg-gray-800">
 
-    <aside class="w-1/5 p-4 bg-gray-900 flex-col flex justify-between text-gray-200">
+    <aside class="w-1/5 min-w- p-4 bg-gray-900 flex-col flex justify-between text-gray-200">
       <header class="grow p-4">
         <img src="imgs/logo.png" alt="Freedom's Trajectory Logo">
         <nav class="mt-8"></nav>
       </header>
 
-      <div>
-        <h2>Explore the RSF's Press Freedom Index from 2002-2025. See movements in press freedom across multiple countries and indicators over time.</h2>
-      </div>
+      <nav id="controls-panel" class="space-y-2">
 
+          <!-- === TOP ROW: Country Search Input === -->
+          <div class="space-y-2">
+              <label class="block text-sm font-bold text-gray-300" for="country-search">COUNTRY</label>
+              <div class="relative">
+                  <input type="text" id="country-search" placeholder="Search and add a country..." class="w-full focus:outline-none text-white">
+                  <!-- This div will be populated by JavaScript with search results. It's hidden by default. -->
+                  <div id="country-results" class="absolute z-10 w-full bg-gray-800 border border-gray-600 rounded-md mt-1 max-h-60 overflow-y-auto hidden">
+                      <!-- JS will add country items here -->
+                  </div>
+              </div>
+          </div>
+
+          <!-- === SECOND ROW: Selected Countries (Left) & Graph By (Right) === -->
+          <!-- This flex container holds the two side-by-side columns. -->
+          <div class="flex items-start gap-2">
+
+              <!-- Left Column: Selected Countries List -->
+              <div id="selected-countries-container" class="w-3/5 space-y-2 bg-gray-800 p-3 rounded-md self-stretch">
+                  <!-- JS will populate this with selected country "pills" -->
+              </div>
+
+              <!-- Right Column: Graph By Selector -->
+              <div class="w-2/5 space-y-2 bg-gray-800 p-2 rounded-md">
+                  <label class="block text-sm text-center font-bold text-gray-300">GRAPH BY</label>
+                  <div id="metric-selector" class="flex flex-col rounded-md bg-gray-700 p-1">
+                      <button data-metric="rank" class="metric-btn flex-1 p-2 text-sm rounded-md bg-yellow-500 text-gray-900 font-bold">Rank</button>
+                      <button data-metric="score" class="metric-btn flex-1 p-2 text-sm rounded-md text-white">Score</button>
+                  </div>
+              </div>
+
+          </div>
+
+          <!-- === THIRD ROW: YEAR RANGE SELECTOR === -->
+          <div class="space-y-2 bg-gray-800 p-3 rounded-md">
+              <label class="block text-sm font-bold text-gray-300">YEAR RANGE</label>
+              <div class="flex items-center justify-between gap-4 pt-1">
+                  <select id="year-start" class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:border-yellow-500">
+                    <option value="2002" hidden>2002</option>
+                  </select>
+                  <span class="text-gray-400 font-bold">→</span>
+                  <select id="year-end" class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:border-yellow-500"></select>
+              </div>
+          </div>
+
+          <!-- === FOURTH ROW: FACTORS (OPTIONAL) === -->
+          <div class="space-y-3 bg-gray-800 p-3 rounded-md">
+              <label class="block text-sm font-bold text-gray-300">FACTORS (OPTIONAL)</label>
+              <div id="factors-container" class="grid grid-cols-2 gap-x-4 gap-y-2 pt-2">
+                  <label class="flex items-center space-x-2 text-sm cursor-pointer text-gray-200">
+                      <input type="checkbox" data-factor="political_score" class="factor-checkbox bg-gray-600 border-gray-500 rounded text-yellow-500 focus:ring-yellow-500">
+                      <span>Political</span>
+                  </label>
+                  <label class="flex items-center space-x-2 text-sm cursor-pointer text-gray-200">
+                      <input type="checkbox" data-factor="economic_score" class="factor-checkbox bg-gray-600 border-gray-500 rounded text-yellow-500 focus:ring-yellow-500">
+                      <span>Economic</span>
+                  </label>
+                  <label class="flex items-center space-x-2 text-sm cursor-pointer text-gray-200">
+                      <input type="checkbox" data-factor="legal_score" class="factor-checkbox bg-gray-600 border-gray-500 rounded text-yellow-500 focus:ring-yellow-500">
+                      <span>Legal</span>
+                  </label>
+                  <label class="flex items-center space-x-2 text-sm cursor-pointer text-gray-200">
+                      <input type="checkbox" data-factor="social_score" class="factor-checkbox bg-gray-600 border-gray-500 rounded text-yellow-500 focus:ring-yellow-500">
+                      <span>Social</span>
+                  </label>
+                  <label class="flex items-center space-x-2 text-sm cursor-pointer text-gray-200">
+                      <input type="checkbox" data-factor="safety_score" class="factor-checkbox bg-gray-600 border-gray-500 rounded text-yellow-500 focus:ring-yellow-500">
+                      <span>Safety</span>
+                  </label>
+              </div>
+              <!-- The special "show only factors" checkbox -->
+              <div class="pt-2 mt-2 border-t border-gray-700">
+                  <label class="flex items-center space-x-2 text-sm cursor-pointer text-red-400 hover:text-red-300 font-bold">
+                      <input type="checkbox" id="show-only-factors" class="factor-checkbox bg-gray-600 border-gray-500 rounded text-red-500 focus:ring-red-500">
+                      <span>Show Only Factors</span>
+                  </label>
+              </div>
+          </div>
+
+      </nav>
+      <div>
+       
+      </div>
       <footer >
         <a href="https://github.com/vlad-gby/rsf_index_visualization">
           <img src="imgs/github-logo.png" alt="GitHub Repository" class="w-16 h-16 mt-4">
@@ -32,10 +112,30 @@
         </p>
       </footer>
     </aside>
+    
 
     <section class="grow flex flex-col justify-center">
-      <div class="p-8 border-8">
-        <canvas id="chart" class="w-full, h-full, border-2"></canvas>
+      <div class="text-center text-gray-300 text-5xl font-stretch-ultra-condensed">Press Freedom Index (data from 
+        <a href="https://rsf.org/en/index" class="underline hover:no-underline">RSF</a>)
+      </div>
+      
+      <div class="p-6 relative">
+        <canvas id="chart" class="w-full, h-full"></canvas>
+
+        <button id="zoom-button" class="absolute top-0 right-11/12 z-10 p-2 bg-gray-700 rounded-full text-gray-300 hover:bg-yellow-500 hover:text-gray-900 focus:outline-none ring-2 focus:ring-offset-gray-800 ring-yellow-500 transition-colors">
+          <!-- A screen-reader only label for accessibility -->
+          <span class="sr-only">Zoom</span>
+        
+          <!-- Magnifying glass SVG icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </div>
+      
+      <div class="text-2xl text-gray-200 text-center px-8">
+        Explore the RSF's Press Freedom Index from 2002-2025. See movements in press freedom across multiple countries and indicators over time.
+        (no data for 2011)
       </div>
     </section>
 
