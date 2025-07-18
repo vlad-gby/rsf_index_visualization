@@ -24,7 +24,7 @@
           <div class="space-y-2">
               <label class="block text-sm font-bold text-gray-300" for="country-search">COUNTRY</label>
               <div class="relative">
-                  <input type="text" id="country-search" placeholder="Search and add a country..." class="w-full focus:outline-none text-white">
+                  <input type="text" id="country-search" placeholder="Search a country" class="border border-gray-400 w-full focus:outline-none text-white py-0.5 px-1 rounded">
                   <!-- This div will be populated by JavaScript with search results. It's hidden by default. -->
                   <div id="country-results" class="absolute z-10 w-full bg-gray-800 border border-gray-600 rounded-md mt-1 max-h-60 overflow-y-auto hidden">
                       <!-- JS will add country items here -->
@@ -42,11 +42,11 @@
               </div>
 
               <!-- Right Column: Graph By Selector -->
-              <div class="w-2/5 space-y-2 bg-gray-800 p-2 rounded-md">
+              <div class="w-2/5 space-y-2 bg-gray-800 p-1 rounded-md">
                   <label class="block text-sm text-center font-bold text-gray-300">GRAPH BY</label>
-                  <div id="metric-selector" class="flex flex-col rounded-md bg-gray-700 p-1">
-                      <button data-metric="rank" class="metric-btn flex-1 p-2 text-sm rounded-md bg-yellow-500 text-gray-900 font-bold">Rank</button>
-                      <button data-metric="score" class="metric-btn flex-1 p-2 text-sm rounded-md text-white">Score</button>
+                  <div class="flex flex-col rounded-md bg-gray-700 p-1.5">
+                      <button data-metric="rank" id="metric-rank" class="metric-rank cursor-pointer active flex-1 p-2 text-sm rounded-mdtext-gray-900">Rank</button>
+                      <button data-metric="score" id="metric-score" class="metric-score cursor-pointer flex-1 p-2 text-sm rounded-md text-white">Score</button>
                   </div>
               </div>
 
@@ -122,7 +122,7 @@
       <div class="p-6 relative">
         <canvas id="chart" class="w-full, h-full"></canvas>
 
-        <button id="zoom-button" class="absolute top-0 right-11/12 z-10 p-2 bg-gray-700 rounded-full text-gray-300 hover:bg-yellow-500 hover:text-gray-900 focus:outline-none ring-2 focus:ring-offset-gray-800 ring-yellow-500 transition-colors">
+        <button id="zoom-button" class="absolute cursor-pointer -top-2 right-13/15 z-10 p-2 bg-gray-700 rounded-full text-gray-300 hover:bg-yellow-500 hover:text-gray-900 focus:outline-none ring-2 focus:ring-offset-gray-800 ring-yellow-500 transition-colors active:ring-offset-2">
           <!-- A screen-reader only label for accessibility -->
           <span class="sr-only">Zoom</span>
         
@@ -131,9 +131,16 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
+        <button id="download-button" class="absolute cursor-pointer -top-2 right-11/12 p-2 bg-gray-700 rounded-full text-gray-300 hover:bg-yellow-500 hover:text-gray-900 focus:outline-none ring-2 focus:ring-offset-gray-800 ring-gray-300 transition-colors active:ring-offset-2">
+            <span class="sr-only">Download Chart</span>
+            <!-- Download SVG Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+        </button>
       </div>
       
-      <div class="text-2xl text-gray-200 text-center px-8">
+      <div class="text-gray-300 text-center px-80">
         Explore the RSF's Press Freedom Index from 2002-2025. See movements in press freedom across multiple countries and indicators over time.
         (no data for 2011)
       </div>
