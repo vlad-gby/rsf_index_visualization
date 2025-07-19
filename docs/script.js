@@ -1,6 +1,6 @@
 let myChart
 let data = {}
-let chartState = [['Ukraine', 'Russia', 'Average'], 'score', ['2002', '2025'], false]
+let chartState = [[], 'rank', ['2002', '2025'], false, [], false]
 
 
 // Make an empty chart
@@ -45,12 +45,14 @@ basicChartOptions =  {
 }
 myChart = new Chart(canvas, basicChartOptions)
 
-function updateChart(countries, graph_by, years, zoom, factors,){
+function updateChart(countries, graph_by, years, zoom, factors, only_factors){
     // Terminate and alert if data from async is not ready yet
     if (!Object.keys(data).length){
         alert('woh-woh, fasty. Give me a sec');
         return
     }
+    // Remove previous errors
+    hideError()
 
     years = years.map(year => parseInt(year))
     let yearsUpd = [] // Get a complete list of selected years
@@ -73,6 +75,9 @@ function updateChart(countries, graph_by, years, zoom, factors,){
         if (graph_by == 'rank'){
             myChart.options.scales.y.min = 0
             myChart.options.scales.y.max = 180
+            if (factors[0]){
+                showError('There is NO ranking for factors, please use SCORE')
+            }
         }else{
             myChart.options.scales.y.min = 0
             myChart.options.scales.y.max = 100
@@ -84,6 +89,9 @@ function updateChart(countries, graph_by, years, zoom, factors,){
 
     data_main = {} // Get main Rank/Score data for each country
     countries.forEach((country) => {
+        if (only_factors){ // Check if ONLY FACTORS option is enabled
+            return
+        }
         data_main[country] = data.filter(row => {
             return (row.country == country) && (yearsUpd.includes(row.year))
         }).map(row => row[graph_by])
@@ -104,6 +112,9 @@ function updateChart(countries, graph_by, years, zoom, factors,){
         
     myChart.data.datasets = []
     Object.keys(data_main).forEach((key) => { // Plotting main indicator for countries
+        if (only_factors){ // Check if ONLY FACTORS option is enabled
+            return
+        }
         myChart.data.datasets.push({
             label: key,
             data: data_main[key]
@@ -134,6 +145,7 @@ async function setUP() { // Gets the data and populates the chart
     updateChart(...chartState)
 
     populateCountries()
+    populateStartYears()
 }
 setUP()
 
@@ -144,6 +156,7 @@ setUP()
 el_nav = document.getElementById('controls-panel')
 el_zoom = document.getElementById('zoom-button')
 el_download = document.getElementById('download-button')
+el_error = document.getElementById('error_message')
 
 el_country_input = document.getElementById('country-search')
 el_countries_selector = document.getElementById('country-results')
@@ -198,7 +211,7 @@ el_graphby_score.addEventListener('click', () => {
 })
 
 
-// At this moment i've notice that i was using the wrong naming convention for el links
+// At this moment i've noticed that i was using the wrong naming convention for el links
 // I'll leave it as it is for now, but it's something to keep in mind, as people in webdev are accustomed to use camelCase
 
 // Used Gemini to create a flag mapper
@@ -394,41 +407,55 @@ const countryFlagsMapper = {
   "Zimbabwe": "🇿🇼"
 };
 
-// Funcs to Populate & Connect Country Selector (activated in async, as dependent on data)
-
-let allCountries = []
+// Funcs to Populate & Connect Country Selector (called in async, as dependent on data)
+let allCountries 
 function populateCountries(){
     allCountries = Array.from(new Set(data.map((record) => record.country))).sort()
     allCountries = allCountries.map((country) => country + ' ' + countryFlagsMapper[country])
 }
-function updateCountries(newList){
+function updateCountries(newList){ 
     el_countries_selector.innerHTML = ''
+    
     newList.forEach((country) => {
         const el_country = document.createElement('div')
         el_country.textContent = country
         el_country.classList.add('country_in_selector')
         el_countries_selector.appendChild(el_country)
 
-        
-
         el_country.addEventListener('click', () => {
             // Cleans the search
             el_country_input.value = ''
             el_countries_selector.classList.add('hidden')
-
+            // Check if country is already in the list and check if max 3 countries
+            if (chartState[0].includes(el_country.textContent
+                .split(' ').slice(0, -1).join(' '))){
+                return
+            }else if(chartState[0].length == 3){
+                showError('Maximum 3 countries')
+                setTimeout(() => {
+                    hideError()
+                }, 2000)
+                return
+            }
             // Prepare text and remove_btn for appending
             el_country_selected = document.createElement('div')
             el_country_selected_text = document.createElement('p')
             el_country_remove_btn = document.getElementById('remove_country_btn').cloneNode(true)
             el_country_selected_text.textContent = el_country.textContent
-            // Append and declare remove_btn eventListener
+            // Append to country in a container
             el_country_selected.appendChild(el_country_selected_text)
             el_country_selected.appendChild(el_country_remove_btn)
             el_country_remove_btn.addEventListener('click', (e) => {
                 let el_to_remove = e.target.closest('.country_in_container')
                 el_to_remove.remove()
-                // Here an update to the chart
+                
+                chartState[0] = chartState[0].filter(countryName => {// Filter out the country being removed
+                    return countryName !== el_to_remove.firstElementChild.textContent.split(' ').slice(0, -1).join(' ')
+                })
+                updateChart(...chartState)
             }, )
+
+            // Apply styles and name of the country in the list, append it and show the button from template
             el_country_selected.classList.add('country_in_container')
             el_countries_container.appendChild(el_country_selected)
             el_country_remove_btn.classList.remove('hidden')
@@ -440,6 +467,12 @@ function updateCountries(newList){
         })
     })
     el_countries_selector.classList.remove('hidden')
+
+    // A little P.S. about this updateCountries function. I know it's a monster, and it's terrible to refactor or even look at, but I was working on this project for a week already, and i'm hella tired. So sure thing it would have been much better to structure things a little, but again, i just need it to do the job. The whole project was intended to show my skills in working with data, and the website was just a way to show it. 
+    // So all i want to say, is that i see how bad it is, but it works - and that's the most important thing for me at this stage of the project. I need to balance perfection with delivery
+
+    // Noticed, that i'm probably feeling tired not because i'm working for so long, well, the main reason may be my poor design decisions in building countries functionality from the start
+    // I definitely had to think better BEFORE writing anything - construct the general road-map before going too deep, so that there is little point in rebuilding thigns, and so much energy is already spent inefficiently 
 }
 
 el_country_input.addEventListener('input', (e) => {
@@ -459,10 +492,95 @@ el_country_input.addEventListener('input', (e) => {
 
 
 
+// Populate and Connect Year Range
+
+let allYears
+function populateStartYears(){
+    allYears = Array.from(new Set(data.map((record) => record.year))).sort()
+    allYears.forEach((year) => {
+        el_item_year_start = document.createElement('option')
+        el_item_year_start.value = year
+        el_item_year_start.textContent = year
+
+        el_year_start.appendChild(el_item_year_start)
+    })
+}
+
+el_year_start.addEventListener('change', () => {
+    // Get possible end years
+    start_year = el_year_start.value
+    ind = allYears.indexOf(parseInt(start_year))
+    end_years = allYears.slice(ind+1)
+    el_year_end.innerHTML = ''
+
+    // Populate end year selector
+    end_years.forEach((year) => {
+        el_item_year_end = document.createElement('option')
+        el_item_year_end.value = year
+        el_item_year_end.textContent = year
+
+        el_year_end.appendChild(el_item_year_end)
+        el_year_end.value = 'placeholder'
+    })
+})
+
+el_year_end.addEventListener('change', () => {
+    start_year = el_year_start.value
+    end_year = el_year_end.value
+
+    chartState[2] = [start_year, end_year]
+    updateChart(...chartState)
+})
+
+
+// Last step in UI Connection - Factors
+
+let el_factors = Array.from(el_factors_container.children)
+el_factors.forEach((label) => {
+    label.addEventListener('change', () => { // Gets checked before code execution
+        factor_clicked = label.firstElementChild.dataset.factor
+        if (label.firstElementChild.checked){
+            chartState[4].push(factor_clicked)
+            if (chartState[4].length == 1){
+                forceScoreMeasure()
+            }
+            updateChart(...chartState)
+        }else{
+            chartState[4] = chartState[4].filter((factor) => factor !== factor_clicked)
+            updateChart(...chartState)
+        }
+    })
+})
+
+el_only_factors = document.getElementById('show-only-factors')
+el_only_factors.addEventListener('change', () => {
+    if (el_only_factors.checked){
+            chartState[5] = true
+            updateChart(...chartState)
+    }else{
+        chartState[5] = false
+        updateChart(...chartState)
+    }
+})
+
+function showError(text){
+    el_error.innerHTML = ''
+    el_error.textContent = text
+    el_error.classList.remove('hidden')
+}
+function hideError(){
+    el_error.classList.add('hidden')
+}
+
+function forceScoreMeasure(){
+    chartState[1] = 'score'
+    el_graphby_score.click()
+}
 
 
 
-
-
+// Refinements: 
+// year range - so that you can select only new year of start
+// change the name of download
 
 
