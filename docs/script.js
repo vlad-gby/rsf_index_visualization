@@ -69,7 +69,6 @@ function updateChart(countries, graph_by, years, zoom, factors,){
     }else{
         myChart.options.scales.y.reverse = false
     }
-    console.log(zoom)
     if (!zoom){
         if (graph_by == 'rank'){
             myChart.options.scales.y.min = 0
@@ -133,6 +132,8 @@ async function setUP() { // Gets the data and populates the chart
     data = await response.json();
 
     updateChart(...chartState)
+
+    populateCountries()
 }
 setUP()
 
@@ -197,9 +198,264 @@ el_graphby_score.addEventListener('click', () => {
 })
 
 
+// At this moment i've notice that i was using the wrong naming convention for el links
+// I'll leave it as it is for now, but it's something to keep in mind, as people in webdev are accustomed to use camelCase
 
+// Used Gemini to create a flag mapper
+const countryFlagsMapper = {
+  "Afghanistan": "🇦🇫",
+  "Albania": "🇦🇱",
+  "Algeria": "🇩🇿",
+  "Andorra": "🇦🇩",
+  "Angola": "🇦🇴",
+  "Argentina": "🇦🇷",
+  "Armenia": "🇦🇲",
+  "Australia": "🇦🇺",
+  "Austria": "🇦🇹",
+  "Average": "📊", // Special case: a chart emoji for the average
+  "Azerbaijan": "🇦🇿",
+  "Bahrain": "🇧🇭",
+  "Bangladesh": "🇧🇩",
+  "Belarus": "🇧🇾",
+  "Belgium": "🇧🇪",
+  "Belize": "🇧🇿",
+  "Benin": "🇧🇯",
+  "Bhutan": "🇧🇹",
+  "Bolivia": "🇧🇴",
+  "Bosnia and Herzegovina": "🇧🇦",
+  "Botswana": "🇧🇼",
+  "Brazil": "🇧🇷",
+  "Brunei": "🇧🇳",
+  "Bulgaria": "🇧🇬",
+  "Burkina Faso": "🇧🇫",
+  "Burundi": "🇧🇮",
+  "Cambodia": "🇰🇭",
+  "Cameroon": "🇨🇲",
+  "Canada": "🇨🇦",
+  "Cape Verde": "🇨🇻",
+  "Caribbean States": "🏴‍☠️", // Special case: a fun flag for a region
+  "Central African Republic": "🇨🇫",
+  "Chad": "🇹🇩",
+  "Chile": "🇨🇱",
+  "China": "🇨🇳",
+  "Colombia": "🇨🇴",
+  "Comoros": "🇰🇲",
+  "Congo": "🇨🇩", // Assumed to be DR Congo
+  "Congo-Brazzaville": "🇨🇬",
+  "Costa Rica": "🇨🇷",
+  "Croatia": "🇭🇷",
+  "Cuba": "🇨🇺",
+  "Cyprus": "🇨🇾",
+  "Czechia": "🇨🇿",
+  "Czechoslovakia (Former)": "🏳️", // Special case: white flag for former country
+  "Denmark": "🇩🇰",
+  "Djibouti": "🇩🇯",
+  "Dominican Republic": "🇩🇴",
+  "Ecuador": "🇪🇨",
+  "Egypt": "🇪🇬",
+  "El Salvador": "🇸🇻",
+  "Equatorial Guinea": "🇬🇶",
+  "Eritrea": "🇪🇷",
+  "Estonia": "🇪🇪",
+  "Eswatini": "🇸🇿",
+  "Ethiopia": "🇪🇹",
+  "Fiji": "🇫🇯",
+  "Finland": "🇫🇮",
+  "France": "🇫🇷",
+  "Gabon": "🇬🇦",
+  "Gambia": "🇬🇲",
+  "Georgia": "🇬🇪",
+  "Germany": "🇩🇪",
+  "Ghana": "🇬🇭",
+  "Greece": "🇬🇷",
+  "Grenada": "🇬🇩",
+  "Guatemala": "🇬🇹",
+  "Guinea": "🇬🇳",
+  "Guinea-Bissau": "🇬🇼",
+  "Guyana": "🇬🇾",
+  "Haiti": "🇭🇹",
+  "Honduras": "🇭🇳",
+  "Hong Kong": "🇭🇰",
+  "Hungary": "🇭🇺",
+  "Iceland": "🇮🇸",
+  "India": "🇮🇳",
+  "Indonesia": "🇮🇩",
+  "Iran": "🇮🇷",
+  "Iraq": "🇮🇶",
+  "Ireland": "🇮🇪",
+  "Israel": "🇮🇱",
+  "Israel (occupied territories)": "🇵🇸", // Using Palestine flag for this context
+  "Israel (outside Israeli territory)": "🇮🇱",
+  "Italy": "🇮🇹",
+  "Ivory Coast": "🇨🇮",
+  "Jamaica": "🇯🇲",
+  "Japan": "🇯🇵",
+  "Jordan": "🇯🇴",
+  "Kazakhstan": "🇰🇿",
+  "Kenya": "🇰🇪",
+  "Kosovo": "🇽🇰",
+  "Kuwait": "🇰🇼",
+  "Kyrgyzstan": "🇰🇬",
+  "Laos": "🇱🇦",
+  "Latvia": "🇱🇻",
+  "Lebanon": "🇱🇧",
+  "Lesotho": "🇱🇸",
+  "Liberia": "🇱🇷",
+  "Libya": "🇱🇾",
+  "Liechtenstein": "🇱🇮",
+  "Lithuania": "🇱🇹",
+  "Luxembourg": "🇱🇺",
+  "Madagascar": "🇲🇬",
+  "Malawi": "🇲🇼",
+  "Malaysia": "🇲🇾",
+  "Maldives": "🇲🇻",
+  "Mali": "🇲🇱",
+  "Malta": "🇲🇹",
+  "Mauritania": "🇲🇷",
+  "Mauritius": "🇲🇺",
+  "Mexico": "🇲🇽",
+  "Moldova": "🇲🇩",
+  "Mongolia": "🇲🇳",
+  "Montenegro": "🇲🇪",
+  "Morocco": "🇲🇦",
+  "Mozambique": "🇲🇿",
+  "Myanmar": "🇲🇲",
+  "Namibia": "🇳🇦",
+  "Nepal": "🇳🇵",
+  "Netherlands": "🇳🇱",
+  "New Zealand": "🇳🇿",
+  "Nicaragua": "🇳🇮",
+  "Niger": "🇳🇪",
+  "Nigeria": "🇳🇬",
+  "North Korea": "🇰🇵",
+  "North Macedonia": "🇲🇰",
+  "Northern Cyprus": "🏳️", // No official emoji, using white flag
+  "Norway": "🇳🇴",
+  "Oman": "🇴🇲",
+  "Pakistan": "🇵🇰",
+  "Palestine": "🇵🇸",
+  "Panama": "🇵🇦",
+  "Papua New Guinea": "🇵🇬",
+  "Paraguay": "🇵🇾",
+  "Peru": "🇵🇪",
+  "Philippines": "🇵🇭",
+  "Poland": "🇵🇱",
+  "Portugal": "🇵🇹",
+  "Qatar": "🇶🇦",
+  "Romania": "🇷🇴",
+  "Russia": "🇷🇺",
+  "Rwanda": "🇷🇼",
+  "Samoa": "🇼🇸",
+  "Saudi Arabia": "🇸🇦",
+  "Senegal": "🇸🇳",
+  "Serbia": "🇷🇸",
+  "Serbia and Montenegro (Former)": "🏳️", // Special case
+  "Seychelles": "🇸🇨",
+  "Sierra Leone": "🇸🇱",
+  "Singapore": "🇸🇬",
+  "Slovakia": "🇸🇰",
+  "Slovenia": "🇸🇮",
+  "Somalia": "🇸🇴",
+  "South Africa": "🇿🇦",
+  "South Korea": "🇰🇷",
+  "South Sudan": "🇸🇸",
+  "Spain": "🇪🇸",
+  "Sri Lanka": "🇱🇰",
+  "Sudan": "🇸🇩",
+  "Suriname": "🇸🇷",
+  "Sweden": "🇸🇪",
+  "Switzerland": "🇨🇭",
+  "Syria": "🇸🇾",
+  "Taiwan": "🇹🇼",
+  "Tajikistan": "🇹🇯",
+  "Tanzania": "🇹🇿",
+  "Thailand": "🇹🇭",
+  "Timor-Leste": "🇹🇱",
+  "Togo": "🇹🇬",
+  "Tonga": "🇹🇴",
+  "Trinidad and Tobago": "🇹🇹",
+  "Tunisia": "🇹🇳",
+  "Turkey": "🇹🇷",
+  "Turkmenistan": "🇹🇲",
+  "Uganda": "🇺🇬",
+  "Ukraine": "🇺🇦",
+  "United Arab Emirates": "🇦🇪",
+  "United Kingdom": "🇬🇧",
+  "United States": "🇺🇸",
+  "United States (Foreign Impact)": "🇺🇸",
+  "United States (in Iraq)": "🇺🇸",
+  "Uruguay": "🇺🇾",
+  "Uzbekistan": "🇺🇿",
+  "Venezuela": "🇻🇪",
+  "Vietnam": "🇻🇳",
+  "Yemen": "🇾🇪",
+  "Yugoslavia (Former)": "🏳️", // Special case
+  "Zambia": "🇿🇲",
+  "Zimbabwe": "🇿🇼"
+};
 
+// Funcs to Populate & Connect Country Selector (activated in async, as dependent on data)
 
+let allCountries = []
+function populateCountries(){
+    allCountries = Array.from(new Set(data.map((record) => record.country))).sort()
+    allCountries = allCountries.map((country) => country + ' ' + countryFlagsMapper[country])
+}
+function updateCountries(newList){
+    el_countries_selector.innerHTML = ''
+    newList.forEach((country) => {
+        const el_country = document.createElement('div')
+        el_country.textContent = country
+        el_country.classList.add('country_in_selector')
+        el_countries_selector.appendChild(el_country)
+
+        
+
+        el_country.addEventListener('click', () => {
+            // Cleans the search
+            el_country_input.value = ''
+            el_countries_selector.classList.add('hidden')
+
+            // Prepare text and remove_btn for appending
+            el_country_selected = document.createElement('div')
+            el_country_selected_text = document.createElement('p')
+            el_country_remove_btn = document.getElementById('remove_country_btn').cloneNode(true)
+            el_country_selected_text.textContent = el_country.textContent
+            // Append and declare remove_btn eventListener
+            el_country_selected.appendChild(el_country_selected_text)
+            el_country_selected.appendChild(el_country_remove_btn)
+            el_country_remove_btn.addEventListener('click', (e) => {
+                let el_to_remove = e.target.closest('.country_in_container')
+                el_to_remove.remove()
+                // Here an update to the chart
+            }, )
+            el_country_selected.classList.add('country_in_container')
+            el_countries_container.appendChild(el_country_selected)
+            el_country_remove_btn.classList.remove('hidden')
+
+            // Update the chart
+            chartState[0].push(el_country.textContent.split(' ').slice(0, -1).join(' '))
+            updateChart(...chartState)
+
+        })
+    })
+    el_countries_selector.classList.remove('hidden')
+}
+
+el_country_input.addEventListener('input', (e) => {
+    if (e.target.value.trim() === ''){
+        el_countries_selector.classList.add('hidden')
+        return
+    }
+     const priorityPattern = new RegExp('^' + e.target.value.toLowerCase())
+     const usualPattern = new RegExp(e.target.value.toLowerCase())
+
+     priorityList = allCountries.filter((country) => priorityPattern.test(country.toLowerCase()))
+     usualList = allCountries.filter((country) => usualPattern.test(country.toLowerCase()))
+
+     newList = Array.from(new Set(priorityList.concat(usualList)))
+     updateCountries(newList)
+})
 
 
 

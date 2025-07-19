@@ -15,6 +15,25 @@ textarea {
     font-weight: bold;
 }
 
+.country_in_selector:hover{
+    background-color: oklch(44.6% 0.03 256.802);
+}
+.country_in_selector:active{
+    background-color: oklch(55.1% 0.027 264.364);
+}
+.country_in_selector{
+    padding: 0px 4px;
+    cursor: pointer;
+}
+
+.country_in_container{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    font-size: 16px;
+    line-height: 1em;
+}   
+
 .active_zoom{
     background-color: oklch(79.5% 0.184 86.047);
     color: oklch(21% 0.034 264.665);
