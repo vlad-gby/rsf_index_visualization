@@ -579,6 +579,28 @@ function forceScoreMeasure(){
 
 
 
+// Try to make the mobile version with JS
+
+const screenWidth = window.innerWidth
+console.log(screenWidth)
+
+if (screenWidth < 1024){
+    // Replace the description
+    description_txt = document.getElementById('description-txt')
+    footer = document.getElementsByTagName('footer')[0]
+    footer.insertBefore(description_txt, footer.firstElementChild)
+
+    // Change the axis-title size
+    myChart.options.scales.y.title.font.size = 22
+
+    // Replace the logo
+    logo = document.getElementById('logo')
+    section = document.getElementsByTagName('section')[0]
+    section.insertBefore(logo,section.firstElementChild)
+}
+
+
+
 // Refinements: 
 // year range - so that you can select only new year of start
 // change the name of download
