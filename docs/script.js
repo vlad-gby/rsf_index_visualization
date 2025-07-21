@@ -582,7 +582,6 @@ function forceScoreMeasure(){
 // Try to make the mobile version with JS
 
 const screenWidth = window.innerWidth
-console.log(screenWidth)
 
 if (screenWidth < 1024){
     // Replace the description

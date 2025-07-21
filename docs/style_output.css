@@ -1163,6 +1163,12 @@
       line-height: var(--tw-leading, var(--text-5xl--line-height));
     }
   }
+  .lg\:text-sm {
+    @media (width >= 64rem) {
+      font-size: var(--text-sm);
+      line-height: var(--tw-leading, var(--text-sm--line-height));
+    }
+  }
 }
 input[type="text"], select, textarea {
   -webkit-appearance: none;
