@@ -184,7 +184,7 @@ el_download.addEventListener('click', () => {
 
             const a = document.createElement('a');
             a.href = imageURI; 
-            a.download = 'my-chart.png'; 
+            a.download = `rsf-${chartState[1]}_${chartState[2][0]}-${chartState[2][1]}`; 
 
             document.body.appendChild(a); 
             a.click(); 
@@ -522,6 +522,7 @@ el_year_start.addEventListener('change', () => {
         el_year_end.appendChild(el_item_year_end)
         el_year_end.value = 'placeholder'
     })
+    console.log(el_year_end.value)
 })
 
 el_year_end.addEventListener('change', () => {
@@ -599,9 +600,5 @@ if (screenWidth < 1024){
 }
 
 
-
-// Refinements: 
-// year range - so that you can select only new year of start
-// change the name of download
 
 
