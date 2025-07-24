@@ -522,7 +522,6 @@ el_year_start.addEventListener('change', () => {
         el_year_end.appendChild(el_item_year_end)
         el_year_end.value = 'placeholder'
     })
-    console.log(el_year_end.value)
 })
 
 el_year_end.addEventListener('change', () => {
@@ -578,10 +577,7 @@ function forceScoreMeasure(){
     el_graphby_score.click()
 }
 
-
-
-// Try to make the mobile version with JS
-
+// Make the mobile version with JS
 const screenWidth = window.innerWidth
 
 if (screenWidth < 1024){
